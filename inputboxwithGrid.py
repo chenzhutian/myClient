@@ -38,15 +38,6 @@ class myClient(object):
         
         
     def send(self):
-        '''
-        self.data = urllib.parse.urlencode({'__VIEWSTATE':'dDwtMTg3MTM5OTI5MTs7PkfLdDpkwXkZwjVjoRLwfK%2BL%2FuEU',
-                                            'TextBox1':self.userName.get(),
-                                            'TextBox2':self.userCode.get(),
-                                            'TextBox3':self.checkCode.get(),
-                                            'RadioButtonList1':'%D1%A7%C9%FA',
-                                            'Button1':'',
-                                            'lbLanguage':''}).encode('ISO-8859-1')
-                                            '''
         datapart1 = '__VIEWSTATE=dDwtMTg3MTM5OTI5MTs7PkfLdDpkwXkZwjVjoRLwfK%2BL%2FuEU&TextBox1='
         datapart2 = '&TextBox2='
         datapart3 = '&TextBox3='
@@ -66,13 +57,7 @@ class myClient(object):
                         'Accept-Language':'zh-CN,zh;q=0.8',
                         'Accept-Chaset':'GBK,utf-8;q=0.7,*;q=0.3',                       
                         'Cookie':'BIGipServerjwxt_bs_80=1233439198.20480.0000'}
-        
         self.loginUrl = 'http://jw2005.scuteo.com/(inh3kz45zvmdtg45zaivog45)/default2.aspx'
-        #self.data = self.data.encode('GBK')
-        #self.req = urllib.request.Request(self.loginUrl)#,self.data,self.header)              
-        #s = urllib.request.urlopen(url = self.req).info()
-        #http = httplib2.Http()
-        #response,content = http.request(self.loginUrl,'POST',headers = self.header,body = urllib.parse.urlencode(self.data))
         self.req = urllib.request.Request(url = self.loginUrl,data = self.data,headers = self.headers)
         s = urllib.request.urlopen(url = self.req).info()
         print(s)

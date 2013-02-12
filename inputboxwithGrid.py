@@ -1,7 +1,6 @@
 from tkinter import *
 import urllib.request
-import urllib.parse
-import httplib2
+
 
 class myClient(object):
     def __init__(self):
@@ -59,9 +58,10 @@ class myClient(object):
                         'Cookie':'BIGipServerjwxt_bs_80=1233439198.20480.0000'}
         self.loginUrl = 'http://jw2005.scuteo.com/(inh3kz45zvmdtg45zaivog45)/default2.aspx'
         self.req = urllib.request.Request(url = self.loginUrl,data = self.data,headers = self.headers)
-        s = urllib.request.urlopen(url = self.req).info()
+        s = urllib.request.urlopen(url = self.req).read().decode('gb2312')
         print(s)
-        print(len(self.data))
+        
+        
 def main():
     d = myClient()
     mainloop()

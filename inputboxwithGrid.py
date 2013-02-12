@@ -1,4 +1,4 @@
-from tkinter import *
+import tkinter as tk
 import urllib.request
 
 
@@ -8,30 +8,30 @@ class myClient(object):
         self.localjpg = ""+('checkCode.gif')
         urllib.request.urlretrieve(self.urlString,self.localjpg)
         
-        self.top = Tk()
+        self.top = tk.Tk()
         
-        self.userNamelabel = Label(self.top,text = '用户名')
+        self.userNamelabel = tk.Label(self.top,text = '用户名')
         self.userNamelabel.grid(row = 0,column = 0)
-        self.userName = Entry(self.top)
+        self.userName = tk.Entry(self.top)
         self.userName.grid(row = 0,column = 1,columnspan = 2)
 
-        self.userCodelabel = Label(self.top,text = '密码   ')
+        self.userCodelabel = tk.Label(self.top,text = '密码   ')
         self.userCodelabel.grid(row = 1,column = 0)
-        self.userCode = Entry(self.top)
+        self.userCode = tk.Entry(self.top)
         self.userCode.grid(row = 1,column = 1,columnspan = 2)
         
-        self.checkCodelabel = Label(self.top,text = '验证码')
+        self.checkCodelabel = tk.Label(self.top,text = '验证码')
         self.checkCodelabel.grid(row = 2,column = 0)
-        self.checkCode = Entry(self.top,width = 8)
+        self.checkCode = tk.Entry(self.top,width = 8)
         self.checkCode.grid(row = 2,column = 1,ipadx = 10)
-        self.image = PhotoImage(file = './checkCode.gif')
-        self.C = Canvas(self.top,height = 20,width = 60)
+        self.image = tk.PhotoImage(file = './checkCode.gif')
+        self.C = tk.Canvas(self.top,height = 20,width = 60)
         self.C.create_image(35,10,image = self.image)
         self.C.grid(row = 2,column = 2)
 
-        self.loginButton = Button(self.top,text = '登陆',width = 7,command = self.send)
+        self.loginButton = tk.Button(self.top,text = '登陆',width = 7,command = self.send)
         self.loginButton.grid(row = 3,column = 1)
-        self.quitButton = Button(self.top,text = '退出',width = 7,command = self.top.destroy)
+        self.quitButton = tk.Button(self.top,text = '退出',width = 7,command = self.top.destroy)
         self.quitButton.grid(row = 3,column = 2)
         #self.imageFile = urllib.request.urlopen(self.urlString)
         
@@ -59,12 +59,25 @@ class myClient(object):
         self.loginUrl = 'http://jw2005.scuteo.com/(inh3kz45zvmdtg45zaivog45)/default2.aspx'
         self.req = urllib.request.Request(url = self.loginUrl,data = self.data,headers = self.headers)
         s = urllib.request.urlopen(url = self.req).read().decode('gb2312')
-        print(s)
+        
+        self.subtop = tk.Tk()
+        self.fm1 = tk.Frame(self.subtop)
+        self.yscrollbar = tk.Scrollbar(self.fm1,orient=tk.VERTICAL)
+        self.yscrollbar.pack(side = tk.RIGHT,fill = tk.Y)
+        self.xscrollbar = tk.Scrollbar(self.fm1,orient=tk.HORIZONTAL)
+        self.xscrollbar.pack(side = tk.BOTTOM,fill = tk.X)
+        self.text = tk.Text(self.fm1,yscrollcommand = self.yscrollbar.set,
+                            xscrollcommand = self.xscrollbar.set,)
+        self.text.insert('end', s)
+        self.yscrollbar.config(command = self.text.yview)
+        self.xscrollbar.config(command = self.text.xview)
+        self.text.pack()
+        self.fm1.pack()
         
         
 def main():
     d = myClient()
-    mainloop()
+    tk.mainloop()
 
 if __name__ == '__main__':
     main()

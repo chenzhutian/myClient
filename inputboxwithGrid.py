@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.messagebox import showinfo
 import urllib.request
 import urllib.parse
 from html.parser import HTMLParser
@@ -108,7 +109,8 @@ class myClient(object):
             pos= self.tempcjUrl.find(self.xm)
             self.cjUrl = self.tempcjUrl[:pos]+urllib.parse.quote(self.tempcjUrl[pos:pos+3].encode('gb2312'))+self.tempcjUrl[pos+3:]
             self.creatWelcomePage()
-        
+        else:
+            showinfo(title = '切克闹', message = '登陆失败，要么是输错密码要么是验证码要么是账号') 
         
     def creatWelcomePage(self):
         self.fm2 = tk.Frame(self.root)

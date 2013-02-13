@@ -104,7 +104,7 @@ class myClient(object):
         self.myhttpparser.feed(self.data)
         
         if self.myhttpparser.flag == 1:
-            self.xm = self.myhttpparser.xmxh[14:17]
+            self.xm = self.myhttpparser.xmxh[14:-2]
             self.tempcjUrl = (self.hostUrl+self.myhttpparser.cjUrl)
             pos= self.tempcjUrl.find(self.xm)
             self.cjUrl = self.tempcjUrl[:pos]+urllib.parse.quote(self.tempcjUrl[pos:pos+3].encode('gb2312'))+self.tempcjUrl[pos+3:]
@@ -158,22 +158,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    

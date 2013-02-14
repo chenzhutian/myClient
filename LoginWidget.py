@@ -7,27 +7,10 @@ import tkinter as tk
 import tkinter.messagebox
 import urllib.request
 import urllib.parse
+import urllib.error
+import MenuPath
 from html.parser import HTMLParser
 
-class MenuPath:
-    
-    xsxk = ''
-    xtyk = ''
-    cxhbxxk = ''
-    bkbmqr = ''
-    fxbm = ''
-    fxxk = ''
-    yxxxk = ''
-    grxx = ''
-    mmxg = ''
-    zytjkbcx = ''
-    xsgrkb = ''
-    cjcx = ''
-    pyjh = ''
-    jscx = ''
-    kcjscx = ''
-    xsxkqkcx = ''
-    myddc = ''
 
 
 class LoginParser(HTMLParser):
@@ -38,7 +21,8 @@ class LoginParser(HTMLParser):
                 'span id="xhxm"':False}
     loginError = ''
     xm = ''
-    path = MenuPath()
+    path = MenuPath.MenuPath()
+    
     def encodeUrl(self,s):
         pos = s.find(self.xm)
         targetUrl = s[:pos]+urllib.parse.quote(s[pos:pos+len(self.xm)].encode('gb2312'))+s[pos+len(self.xm):]
@@ -122,7 +106,8 @@ class loginWidget(object):
     loginPath = 'default2.aspx'
     mainPath = ''
     loginState = False
-    menuPath = MenuPath()
+    loginError = 0
+    menuPath = MenuPath.MenuPath()
     
     def __init__(self):
         f = urllib.request.urlopen('http://jw2005.scuteo.com/')
@@ -130,7 +115,6 @@ class loginWidget(object):
         self.mainUrl = 'http://jw2005.scuteo.com/'+ p[1:p.rfind('/')+1]
         Cookie = f.info()['Set-Cookie']
         self.userCookie = Cookie[:Cookie.find(';')]
-        self.root = tk.Tk()
         self.creatWidget()
         self.loginParser = LoginParser()
         
@@ -138,8 +122,7 @@ class loginWidget(object):
         localjpg = ""+('checkCode.gif')
         urllib.request.urlretrieve(self.mainUrl+self.checkCodePath,localjpg)
         
-        self.loginFrame = tk.Frame(self.root)
-        self.loginFrame.pack()
+        self.loginFrame = tk.Tk()
         
         self.userNamelabel = tk.Label(self.loginFrame,text = '用户名')
         self.userNamelabel.grid(row = 0,column = 0,sticky = tk.W)
@@ -162,8 +145,10 @@ class loginWidget(object):
 
         self.loginButton = tk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
         self.loginButton.grid(row = 3,column = 1)
-        self.quitButton = tk.Button(self.loginFrame,text = '退出',width = 7,command = self.root.destroy)
+        self.quitButton = tk.Button(self.loginFrame,text = '退出',width = 7,command = self.loginFrame.destroy)
         self.quitButton.grid(row = 3,column = 2)
+        self.loginFrame.minsize(185,102)
+        self.loginFrame.maxsize(185,102)
         
     def login(self):
         self.userName = self.userNameEntry.get()
@@ -201,14 +186,20 @@ class loginWidget(object):
                            'Cookie':self.userCookie}
             
             self.req = urllib.request.Request(url = self.mainUrl+self.loginPath,data = self.body,headers = self.headers)
-            self.data = urllib.request.urlopen(url = self.req)
-            loginParser = LoginParser()
-            loginParser.feed(self.data.read().decode('gb2312'))
-            if loginParser.loginError != '' :
-                tkinter.messagebox.showwarning('错误', loginParser.loginError)
+            try:
+                self.data = urllib.request.urlopen(url = self.req)
+            except urllib.error.HTTPError as e:
+                self.loginError = e.getcode()
             else:
-                self.userXm = loginParser.xm
-                self.menuPath = loginParser.path
+                loginParser = LoginParser()
+                loginParser.feed(self.data.read().decode('gb2312'))
+                if loginParser.loginError != '' :
+                    tkinter.messagebox.showwarning('错误', loginParser.loginError)
+                else:
+                    self.userXm = loginParser.xm
+                    self.menuPath = loginParser.path
+                    self.loginState = True
+                    print('denglu cheng gong ')
 
 def main():
     loginWidget()

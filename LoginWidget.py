@@ -4,6 +4,7 @@ Login Widget
 @author: unhealthy
 '''
 import tkinter as tk
+from tkinter import ttk
 import tkinter.messagebox
 import urllib.request
 import urllib.parse
@@ -90,9 +91,10 @@ class LoginParser(HTMLParser):
     def handle_endtag(self,tag):
         if tag == 'script':
             self.tagflag['script'] = False
+            self.dataflag['script language="javascript"'] = False
         elif tag == 'span':
             self.tagflag['span'] = False
-
+            self.tagflag['span id="xhxm"'] = False
 
 class loginWidget(object):
 
@@ -124,33 +126,36 @@ class loginWidget(object):
         
         self.loginFrame = tk.Tk()
         
-        self.userNamelabel = tk.Label(self.loginFrame,text = '用户名')
+        self.userNamelabel = ttk.Label(self.loginFrame,text = '用户名')
         self.userNamelabel.grid(row = 0,column = 0,sticky = tk.W)
-        self.userNameEntry = tk.Entry(self.loginFrame)
+        self.userNameEntry = ttk.Entry(self.loginFrame)
         self.userNameEntry.grid(row = 0,column = 1,columnspan = 2,sticky = tk.E)
 
-        self.userCodelabel = tk.Label(self.loginFrame,text = '密码')
+        self.userCodelabel = ttk.Label(self.loginFrame,text = '密码')
         self.userCodelabel.grid(row = 1,column = 0,sticky = tk.W)
-        self.userCodeEntry = tk.Entry(self.loginFrame)
+        self.userCodeEntry = ttk.Entry(self.loginFrame)
         self.userCodeEntry.grid(row = 1,column = 1,columnspan = 2,sticky = tk.E)
         
-        self.checkCodelabel = tk.Label(self.loginFrame,text = '验证码')
+        self.checkCodelabel = ttk.Label(self.loginFrame,text = '验证码')
         self.checkCodelabel.grid(row = 2,column = 0,sticky = tk.W)
-        self.checkCodeEntry = tk.Entry(self.loginFrame,width = 8)
+        self.checkCodeEntry = ttk.Entry(self.loginFrame,width = 8)
         self.checkCodeEntry.grid(row = 2,column = 1,ipadx = 10,sticky = tk.E)
         self.checkCodeImage = tk.PhotoImage(file = './checkCode.gif')
         self.checkCodeCanvas = tk.Canvas(self.loginFrame,height = 20,width = 60)
         self.checkCodeCanvas.create_image(35,10,image = self.checkCodeImage)
         self.checkCodeCanvas.grid(row = 2,column = 2,sticky = tk.E)
 
-        self.loginButton = tk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
+        self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
+        #self.loginButton.bind('<Button-1>',self.login)
         self.loginButton.grid(row = 3,column = 1)
-        self.quitButton = tk.Button(self.loginFrame,text = '退出',width = 7,command = self.loginFrame.destroy)
+        self.quitButton = ttk.Button(self.loginFrame,text = '退出',width = 7,command = self.loginFrame.destroy)
         self.quitButton.grid(row = 3,column = 2)
+        
+        self.loginFrame.bind('<Return>',self.login)
         self.loginFrame.minsize(185,102)
         self.loginFrame.maxsize(185,102)
         
-    def login(self):
+    def login(self,event = None):
         self.userName = self.userNameEntry.get()
         self.userCode = self.userCodeEntry.get()
         self.checkCode = self.checkCodeEntry.get()

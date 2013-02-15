@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as ttk
 from html.parser import HTMLParser
 from html.entities import name2codepoint
 import urllib.request
@@ -7,17 +7,17 @@ import urllib.request
 class myHTMLParser(HTMLParser):
     def __init__(self,data = 'default'):
         HTMLParser.__init__(self)
-        self.top = tk.Tk()
-        self.s = tk.StringVar(self.top)
+        self.top = ttk.Tk()
+        self.s = ttk.StringVar(self.top)
         
-        #self.label = tk.Label(self.top,text = self.s)
-        self.fm1 = tk.Frame(self.top)
+        #self.label = ttk.Label(self.top,text = self.s)
+        self.fm1 = ttk.Frame(self.top)
         
-        self.yscrollbar = tk.Scrollbar(self.fm1)
-        self.yscrollbar.pack(side = tk.RIGHT,fill = tk.Y)
-        self.xscrollbar = tk.Scrollbar(self.fm1)
-        self.xscrollbar.pack(side = tk.BOTTOM,fill = tk.X)
-        self.text = tk.Text(self.fm1,yscrollcommand = self.yscrollbar.set,
+        self.yscrollbar = ttk.Scrollbar(self.fm1)
+        self.yscrollbar.pack(side = ttk.RIGHT,fill = ttk.Y)
+        self.xscrollbar = ttk.Scrollbar(self.fm1)
+        self.xscrollbar.pack(side = ttk.BOTTOM,fill = ttk.X)
+        self.text = ttk.Text(self.fm1,yscrollcommand = self.yscrollbar.set,
                             xscrollcommand = self.xscrollbar.set)
         self.text.insert('end', data)
         self.yscrollbar.config(command = self.text.yview)
@@ -69,7 +69,7 @@ def main():
     s = urllib.request.urlopen(url = req).read().decode('gb2312')
     print(s)
     browser = myHTMLParser(data = s)
-    tk.mainloop()
+    ttk.mainloop()
     
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as ttk
 from tkinter.messagebox import showinfo
 import urllib.request
 import urllib.parse
@@ -40,7 +40,7 @@ class myHTMLParser(HTMLParser):
 class myClient(object):
     
     def __init__(self):
-        self.root = tk.Frame()
+        self.root = ttk.Frame()
         self.creatWidget()
         self.root.pack()
         
@@ -50,29 +50,29 @@ class myClient(object):
         self.localjpg = ""+('checkCode.gif')
         urllib.request.urlretrieve(self.urlString,self.localjpg)
         
-        self.top = tk.Frame(self.root)
-        self.userNamelabel = tk.Label(self.top,text = '用户名')
+        self.top = ttk.Frame(self.root)
+        self.userNamelabel = ttk.Label(self.top,text = '用户名')
         self.userNamelabel.grid(row = 0,column = 0)
-        self.userName = tk.Entry(self.top)
+        self.userName = ttk.Entry(self.top)
         self.userName.grid(row = 0,column = 1,columnspan = 2)
 
-        self.userCodelabel = tk.Label(self.top,text = '密码   ')
+        self.userCodelabel = ttk.Label(self.top,text = '密码   ')
         self.userCodelabel.grid(row = 1,column = 0)
-        self.userCode = tk.Entry(self.top)
+        self.userCode = ttk.Entry(self.top)
         self.userCode.grid(row = 1,column = 1,columnspan = 2)
         
-        self.checkCodelabel = tk.Label(self.top,text = '验证码')
+        self.checkCodelabel = ttk.Label(self.top,text = '验证码')
         self.checkCodelabel.grid(row = 2,column = 0)
-        self.checkCode = tk.Entry(self.top,width = 8)
+        self.checkCode = ttk.Entry(self.top,width = 8)
         self.checkCode.grid(row = 2,column = 1,ipadx = 10)
-        self.checkCodeImage = tk.PhotoImage(file = './checkCode.gif')
-        self.checkCodeCanvas = tk.Canvas(self.top,height = 20,width = 60)
+        self.checkCodeImage = ttk.PhotoImage(file = './checkCode.gif')
+        self.checkCodeCanvas = ttk.Canvas(self.top,height = 20,width = 60)
         self.checkCodeCanvas.create_image(35,10,image = self.checkCodeImage)
         self.checkCodeCanvas.grid(row = 2,column = 2)
 
-        self.loginButton = tk.Button(self.top,text = '登陆',width = 7,command = self.send)
+        self.loginButton = ttk.Button(self.top,text = '登陆',width = 7,command = self.send)
         self.loginButton.grid(row = 3,column = 1)
-        self.quitButton = tk.Button(self.top,text = '退出',width = 7,command = self.top.quit)
+        self.quitButton = ttk.Button(self.top,text = '退出',width = 7,command = self.top.quit)
         self.quitButton.grid(row = 3,column = 2)
         
         self.top.pack()
@@ -113,10 +113,10 @@ class myClient(object):
             showinfo(title = '切克闹', message = '登陆失败，要么是输错密码要么是验证码要么是账号') 
         
     def creatWelcomePage(self):
-        self.fm2 = tk.Frame(self.root)
-        self.imformationButton = tk.Button(self.fm2,text = '成绩查询',command = self.checkImformation)
+        self.fm2 = ttk.Frame(self.root)
+        self.imformationButton = ttk.Button(self.fm2,text = '成绩查询',command = self.checkImformation)
         self.imformationButton.pack()
-        self.nameLabel = tk.Label(self.fm2,text = self.xm)
+        self.nameLabel = ttk.Label(self.fm2,text = self.xm)
         self.nameLabel.pack()
         self.fm2.pack()
         
@@ -136,12 +136,12 @@ class myClient(object):
         
     def creatText(self):
         self.top.destroy()
-        self.fm1 = tk.Frame(self.root)
-        self.yscrollbar = tk.Scrollbar(self.fm1,orient=tk.VERTICAL)
-        self.yscrollbar.pack(side = tk.RIGHT,fill = tk.Y)
-        self.xscrollbar = tk.Scrollbar(self.fm1,orient=tk.HORIZONTAL)
-        self.xscrollbar.pack(side = tk.BOTTOM,fill = tk.X)
-        self.text = tk.Text(self.fm1,
+        self.fm1 = ttk.Frame(self.root)
+        self.yscrollbar = ttk.Scrollbar(self.fm1,orient=ttk.VERTICAL)
+        self.yscrollbar.pack(side = ttk.RIGHT,fill = ttk.Y)
+        self.xscrollbar = ttk.Scrollbar(self.fm1,orient=ttk.HORIZONTAL)
+        self.xscrollbar.pack(side = ttk.BOTTOM,fill = ttk.X)
+        self.text = ttk.Text(self.fm1,
                             yscrollcommand = self.yscrollbar.set,
                             xscrollcommand = self.xscrollbar.set,)
         self.text.insert('end', self.data)
@@ -152,8 +152,8 @@ class myClient(object):
         
         
 def main():
-    d = myClient()
-    tk.mainloop()
+    myClient()
+    ttk.mainloop()
 
 if __name__ == '__main__':
     main()

@@ -133,7 +133,7 @@ class loginWidget(object):
 
         self.userCodelabel = ttk.Label(self.loginFrame,text = '密码')
         self.userCodelabel.grid(row = 1,column = 0,sticky = tk.W)
-        self.userCodeEntry = ttk.Entry(self.loginFrame)
+        self.userCodeEntry = ttk.Entry(self.loginFrame,show = '*')
         self.userCodeEntry.grid(row = 1,column = 1,columnspan = 2,sticky = tk.E)
         
         self.checkCodelabel = ttk.Label(self.loginFrame,text = '验证码')

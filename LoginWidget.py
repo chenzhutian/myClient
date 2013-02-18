@@ -111,14 +111,16 @@ class loginWidget(object):
     loginError = 0
     menuPath = MenuPath.MenuPath()
     
-    def __init__(self):
+    def __init__(self, event = None):
         f = urllib.request.urlopen('http://jw2005.scuteo.com/')
         p = (urllib.parse.urlparse(f.geturl()))[2]
         self.mainUrl = 'http://jw2005.scuteo.com/'+ p[1:p.rfind('/')+1]
         Cookie = f.info()['Set-Cookie']
         self.userCookie = Cookie[:Cookie.find(';')]
-        self.creatWidget()
         self.loginParser = LoginParser()
+        self.event = event
+        self.creatWidget()
+        
         
     def creatWidget(self):
         localjpg = ""+('checkCode.gif')
@@ -138,22 +140,20 @@ class loginWidget(object):
         
         self.checkCodelabel = ttk.Label(self.loginFrame,text = '验证码')
         self.checkCodelabel.grid(row = 2,column = 0,sticky = tk.W)
-        self.checkCodeEntry = ttk.Entry(self.loginFrame,width = 8)
-        self.checkCodeEntry.grid(row = 2,column = 1,ipadx = 10,sticky = tk.E)
+        self.checkCodeEntry = ttk.Entry(self.loginFrame,width = 10)
+        self.checkCodeEntry.grid(row = 2,column = 1,sticky = tk.E+tk.W)
         self.checkCodeImage = tk.PhotoImage(file = './checkCode.gif')
-        self.checkCodeCanvas = tk.Canvas(self.loginFrame,height = 20,width = 60)
-        self.checkCodeCanvas.create_image(35,10,image = self.checkCodeImage)
-        self.checkCodeCanvas.grid(row = 2,column = 2,sticky = tk.E)
-
+        self.checkCodeImageLabel = ttk.Label(self.loginFrame,image = self.checkCodeImage)
+        self.checkCodeImageLabel.grid(row = 2,column = 2,sticky = tk.E)
+        
         self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
-        #self.loginButton.bind('<Button-1>',self.login)
         self.loginButton.grid(row = 3,column = 1)
         self.quitButton = ttk.Button(self.loginFrame,text = '退出',width = 7,command = self.loginFrame.destroy)
         self.quitButton.grid(row = 3,column = 2)
         
         self.loginFrame.bind('<Return>',self.login)
-        self.loginFrame.minsize(185,102)
-        self.loginFrame.maxsize(185,102)
+        self.loginFrame.minsize(189,103)
+        self.loginFrame.maxsize(189,103)
         
     def login(self,event = None):
         self.userName = self.userNameEntry.get()
@@ -204,7 +204,8 @@ class loginWidget(object):
                     self.userXm = loginParser.xm
                     self.menuPath = loginParser.path
                     self.loginState = True
-                    print('denglu cheng gong ')
+                    self.event.set()
+                    self.loginFrame.destroy()
 
 def main():
     loginWidget()

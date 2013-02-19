@@ -11,7 +11,6 @@ from html.parser import HTMLParser
 import LoginWidget
 import MenuPath
 import threading
-import types
 
 class CjParser(HTMLParser):
     getData = False
@@ -119,6 +118,7 @@ class browerserWidget(object):
     mainPath = ''
     menuPath = MenuPath.MenuPath()
     Cj = []
+    
     showCjdataFlag = 0
     loadCjdataFlag = 0
     iid = 0
@@ -137,9 +137,8 @@ class browerserWidget(object):
         self.MainFrame = tk.Frame(self.MainWindow)
         self.MainFrame.grid(row = 0,column = 0)
         self.MainWindow.config(menu = self.menuBar)
-        self.menuBar.add_command(label = '查询成绩',command = self.creatCjWidget)
+        self.menuBar.add_command(label = '查询成绩',command = self.cjControllerStart)
         self.menuBar.add_command(label = '选课',command = self.creatXkWidget)
-        
         
         self.userName = self.loginW.userName
         self.userCode = self.loginW.userCode
@@ -149,29 +148,38 @@ class browerserWidget(object):
         self.menuPath = self.loginW.menuPath
         self.userXm = self.loginW.userXm
         del self.loginW
-    
-    def loadingPage(self):
+        
+    def initMainFrame(self):
         self.MainFrame.destroy()
         self.MainFrame = ttk.Frame(self.MainWindow)
         self.MainFrame.grid(row = 0,column = 0)
-
+    
+    
+    def loadingPage(self):
+        self.initMainFrame()
+        self.pbFrame = ttk.LabelFrame(self.MainFrame)
+        self.pLabel = ttk.Label(self.pbFrame,text = 'Loading...',font = "Helvetica 14 bold")
+        self.progressBar = ttk.Progressbar(self.pbFrame,orient=tk.HORIZONTAL,mode='determinate',length = 600)
+        self.progressBar.start()
+        self.pbFrame.grid(row = 0,column = 0,rowspan = 2,padx = 190,pady=140)
+        self.pLabel.grid(row = 0,column = 0,pady = 20)
+        self.progressBar.grid(row = 1,column = 0)
+    
         
-        pbFrame = ttk.LabelFrame(self.MainFrame)
-        pLabel = ttk.Label(pbFrame,text = 'Loading...',font = "Helvetica 14 bold")
-        progressBar = ttk.Progressbar(pbFrame,orient=tk.HORIZONTAL,mode='determinate',length = 600)
-        progressBar.start()
-        
-        pbFrame.grid(row = 0,column = 0,rowspan = 2,padx = 190,pady=140)
-        pLabel.grid(row = 0,column = 0,pady = 20)
-        progressBar.grid(row = 1,column = 0)
-        
-    def creatCjWidget(self):
+    def cjControllerStart(self):
         if self.loadCjdataFlag == 0:
+            self.cjUserImformationLabelVar = tk.StringVar(self.MainWindow)
+            self.cjUserImformationLabelVar.set('   '*20+'Loading...请稍等')
+            t1 = threading.Thread(target = self.loadCjdata,args = ())
+            t1.start()
+            self.loadCjdataFlag = 1
+            self.creatCjWidget()
+        else:
+            self.creatCjWidget()
             
-            t2 = threading.Thread(target = self.loadCjdata,args = ())
-            t2.start()
-            
-
+    def creatCjWidget(self):
+        self.initMainFrame()
+        
         self.showCjdataFlag = 0
         self.cjFrame = ttk.Frame(self.MainFrame,height = 90*6,width = 160*6)
         self.cjFrame.grid(column=0, row=0,columnspan = 6,rowspan = 4,sticky = tk.W+tk.E+tk.S+tk.N)
@@ -181,22 +189,22 @@ class browerserWidget(object):
         self.cjLabelFrame1.grid(column = 0,row = 0,columnspan = 6,rowspan = 2,sticky = tk.W+tk.E+tk.S+tk.N)
         self.cjLabelFrame2.grid(column = 0,row = 2,columnspan = 6,sticky = tk.W+tk.E+tk.S+tk.N)
         
-        self.cjUserImformationLabel = ttk.Label(self.cjLabelFrame1,font = "Helvetica 14 bold")
+        
+        self.cjUserImformationLabel = ttk.Label(self.cjLabelFrame1,font = "Helvetica 14 bold",textvariabl = self.cjUserImformationLabelVar)
         self.cjXnOpptionLabel = ttk.Label(self.cjLabelFrame1,text = '学年')
-        self.cjXnOpption = ttk.Combobox(self.cjLabelFrame1)
-        self.cjXnOpption.state(['!disabled', 'readonly'])
+        self.cjXnOpption = ttk.Combobox(self.cjLabelFrame1,state = tk.DISABLED)
         self.cjXnOpption.config(value = ('2005-2006','2006-2007','2007-2008','2008-2009','2009-2010','2010-2011','2011-2012','2012-2013','2013-2014'))
         self.cjXqOpptionLabel = ttk.Label(self.cjLabelFrame1,text = '学期')
-        self.cjXqOpption = ttk.Combobox(self.cjLabelFrame1)
-        self.cjXqOpption.state(['!disabled', 'readonly'])
+        self.cjXqOpption = ttk.Combobox(self.cjLabelFrame1,state = tk.DISABLED)
         self.cjXqOpption.config(value = (' ','1','2','3'))
-        self.cjLncjButton = ttk.Button(self.cjLabelFrame1,text = '历年成绩',command = self.showCjdata2)
+        self.cjLncjButton = ttk.Button(self.cjLabelFrame1,text = '历年成绩',command = self.showCjdata2,state = 'disabled')
         self.cjUserImformationLabel.grid(row = 0,column = 0,columnspan = 6,sticky = tk.E+tk.W+tk.S+tk.N)
         self.cjXnOpptionLabel.grid(row = 1,column = 0,sticky = tk.E)
         self.cjXnOpption.grid(row = 1,column = 1,sticky = tk.W)
         self.cjXqOpptionLabel.grid(row = 1,column = 2,sticky = tk.E)
         self.cjXqOpption.grid(row = 1,column = 3,sticky = tk.W)
         self.cjLncjButton.grid(row = 1,column = 4,sticky = tk.W)
+        
         
         self.listYScrollbar = ttk.Scrollbar(self.cjLabelFrame2)
         self.listXScrollbar = ttk.Scrollbar(self.cjLabelFrame2, orient=tk.HORIZONTAL)
@@ -222,15 +230,12 @@ class browerserWidget(object):
         
         self.cjXnOpption.bind('<<ComboboxSelected>>',self.showCjdata1)
         self.cjXqOpption.bind('<<ComboboxSelected>>',self.showCjdata1)
-        if self.loadCjdataFlag == 0:
-            t2.join()
-            self.loadCjdataFlag = 1
             
-        self.cjUserImformationLabel['text'] = '     '+self.userName+'    '+self.userXm+'    '+self.xy+'     '+self.zy+'     '+self.xzb
+
         self.cjGPAString = tk.StringVar(self.cjFrame)
         self.cjGPALabel = ttk.Label(self.cjFrame, font = "Helvetica 12 bold",textvariable = self.cjGPAString)
         self.cjGPALabel.grid(row = 4,column = 0,columnspan = 6,sticky = tk.W+tk.E)
-        
+
     def loadCjdata(self):
         self.cjHeaders = {'Host':'jw2005.scuteo.com',
                            'Connection':'keep-alive',
@@ -277,6 +282,10 @@ class browerserWidget(object):
         del self.cjHeaders
         del self.cjReq
         del self.cjData
+        self.cjUserImformationLabelVar.set('     '+self.userName+'    '+self.userXm+'    '+self.xy+'     '+self.zy+'     '+self.xzb)
+        self.cjXqOpption.state(['!disabled', 'readonly'])
+        self.cjXnOpption.state(['!disabled', 'readonly'])
+        self.cjLncjButton.state(['!disabled'])
         
     def showCjdata1(self,event):
         

@@ -11,7 +11,7 @@ import urllib.parse
 import urllib.error
 import MenuPath
 from html.parser import HTMLParser
-
+import threading
 
 
 class LoginParser(HTMLParser):
@@ -107,7 +107,6 @@ class loginWidget(object):
     checkCodePath = 'CheckCode.aspx'
     loginPath = 'default2.aspx'
     mainPath = ''
-    loginState = False
     loginError = 0
     menuPath = MenuPath.MenuPath()
     
@@ -126,7 +125,9 @@ class loginWidget(object):
         localjpg = ""+('checkCode.gif')
         urllib.request.urlretrieve(self.mainUrl+self.checkCodePath,localjpg)
         
-        self.loginFrame = tk.Tk()
+        self.top = tk.Tk()
+        self.loginFrame = ttk.Frame(self.top)
+        self.loginFrame.grid(row = 0,column = 0)
         
         self.userNamelabel = ttk.Label(self.loginFrame,text = '用户名')
         self.userNamelabel.grid(row = 0,column = 0,sticky = tk.W)
@@ -146,16 +147,16 @@ class loginWidget(object):
         self.checkCodeImageLabel = ttk.Label(self.loginFrame,image = self.checkCodeImage)
         self.checkCodeImageLabel.grid(row = 2,column = 2,sticky = tk.E)
         
-        self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
+        self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.ControllerStart)
         self.loginButton.grid(row = 3,column = 1)
-        self.quitButton = ttk.Button(self.loginFrame,text = '退出',width = 7,command = self.loginFrame.destroy)
+        self.quitButton = ttk.Button(self.loginFrame,text = '退出',width = 7,command = self.top.destroy)
         self.quitButton.grid(row = 3,column = 2)
         
-        self.loginFrame.bind('<Return>',self.login)
-        self.loginFrame.minsize(189,103)
-        self.loginFrame.maxsize(189,103)
-        
-    def login(self,event = None):
+        self.top.bind('<Return>',self.ControllerStart)
+        self.top.minsize(189,103)
+        self.top.maxsize(189,103)
+    
+    def ControllerStart(self,event = None):
         self.userName = self.userNameEntry.get()
         self.userCode = self.userCodeEntry.get()
         self.checkCode = self.checkCodeEntry.get()
@@ -167,6 +168,12 @@ class loginWidget(object):
         elif len(self.checkCode) != 5:
             tkinter.messagebox.showwarning('错误', '验证码不正确')
         else:
+            t1 = threading.Thread(target = self.login,args = ())
+            t1.start()
+            t1.join()
+            self.top.destroy()
+            
+    def login(self):
             self.mainPath = 'xs_main.aspx?xh='+self.userName
             
             bodypart1 = '__VIEWSTATE=dDwtMTg3MTM5OTI5MTs7PkfLdDpkwXkZwjVjoRLwfK%2BL%2FuEU&TextBox1='
@@ -203,9 +210,7 @@ class loginWidget(object):
                 else:
                     self.userXm = loginParser.xm
                     self.menuPath = loginParser.path
-                    self.loginState = True
                     self.event.set()
-                    self.loginFrame.destroy()
 
 def main():
     loginWidget()

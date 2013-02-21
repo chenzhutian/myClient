@@ -12,6 +12,21 @@ import LoginWidget
 import MenuPath
 import threading
 
+class MyThread(threading.Thread):
+    def __init__(self,Var,BrowerserWidget):
+        threading.Thread.__init__(self)
+        self.Var = Var
+        self.b = BrowerserWidget
+        
+    def run(self):
+        while True:
+            if self.Var.get() != '99.0':
+                print(self.Var.get())
+            else:
+                self.b.creatCjWidget()
+                break
+
+
 class CjParser(HTMLParser):
     getData = False
     getDatelData1 = 0
@@ -127,18 +142,17 @@ class browerserWidget(object):
         self.event = event
         self.loginW = loginW
         
-    def creatMainWindow(self):
-        self.event.wait()
-        
+    def creatMainWindow(self):        
         self.MainWindow = tk.Tk()
         self.MainWindow.minsize(160*6, 90*6)
         self.MainWindow.maxsize(160*6, 90*6)
         self.menuBar = tk.Menu(self.MainWindow)
         self.MainFrame = tk.Frame(self.MainWindow)
-        self.MainFrame.grid(row = 0,column = 0)
+        
         self.MainWindow.config(menu = self.menuBar)
         self.menuBar.add_command(label = '查询成绩',command = self.cjControllerStart)
         self.menuBar.add_command(label = '选课',command = self.creatXkWidget)
+        self.MainFrame.grid(row = 0,column = 0)
         
         self.userName = self.loginW.userName
         self.userCode = self.loginW.userCode
@@ -154,7 +168,6 @@ class browerserWidget(object):
         self.MainFrame = ttk.Frame(self.MainWindow)
         self.MainFrame.grid(row = 0,column = 0)
     
-    
     def loadingPage(self):
         self.initMainFrame()
         self.pbFrame = ttk.LabelFrame(self.MainFrame)
@@ -165,15 +178,14 @@ class browerserWidget(object):
         self.pLabel.grid(row = 0,column = 0,pady = 20)
         self.progressBar.grid(row = 1,column = 0)
     
-        
     def cjControllerStart(self):
         if self.loadCjdataFlag == 0:
             self.cjUserImformationLabelVar = tk.StringVar(self.MainWindow)
             self.cjUserImformationLabelVar.set('   '*20+'Loading...请稍等')
             t1 = threading.Thread(target = self.loadCjdata,args = ())
             t1.start()
-            self.loadCjdataFlag = 1
             self.creatCjWidget()
+            self.loadCjdataFlag = 1
         else:
             self.creatCjWidget()
             
@@ -235,7 +247,11 @@ class browerserWidget(object):
         self.cjGPAString = tk.StringVar(self.cjFrame)
         self.cjGPALabel = ttk.Label(self.cjFrame, font = "Helvetica 12 bold",textvariable = self.cjGPAString)
         self.cjGPALabel.grid(row = 4,column = 0,columnspan = 6,sticky = tk.W+tk.E)
-
+        if self.loadCjdataFlag == 1:
+            self.cjXqOpption.state(['!disabled', 'readonly'])
+            self.cjXnOpption.state(['!disabled', 'readonly'])
+            self.cjLncjButton.state(['!disabled'])
+            
     def loadCjdata(self):
         self.cjHeaders = {'Host':'jw2005.scuteo.com',
                            'Connection':'keep-alive',

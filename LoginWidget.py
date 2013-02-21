@@ -11,8 +11,6 @@ import urllib.parse
 import urllib.error
 import MenuPath
 from html.parser import HTMLParser
-import threading
-
 
 class LoginParser(HTMLParser):
         
@@ -108,7 +106,10 @@ class loginWidget(object):
     loginPath = 'default2.aspx'
     mainPath = ''
     loginError = 0
+    loginState = False
     menuPath = MenuPath.MenuPath()
+    
+    
     
     def __init__(self, event = None):
         f = urllib.request.urlopen('http://jw2005.scuteo.com/')
@@ -119,7 +120,6 @@ class loginWidget(object):
         self.loginParser = LoginParser()
         self.event = event
         self.creatWidget()
-        
         
     def creatWidget(self):
         localjpg = ""+('checkCode.gif')
@@ -147,16 +147,16 @@ class loginWidget(object):
         self.checkCodeImageLabel = ttk.Label(self.loginFrame,image = self.checkCodeImage)
         self.checkCodeImageLabel.grid(row = 2,column = 2,sticky = tk.E)
         
-        self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.ControllerStart)
+        self.loginButton = ttk.Button(self.loginFrame,text = '登陆',width = 7,command = self.login)
         self.loginButton.grid(row = 3,column = 1)
         self.quitButton = ttk.Button(self.loginFrame,text = '退出',width = 7,command = self.top.destroy)
         self.quitButton.grid(row = 3,column = 2)
         
-        self.top.bind('<Return>',self.ControllerStart)
+        self.top.bind('<Return>',self.login)
         self.top.minsize(189,103)
         self.top.maxsize(189,103)
     
-    def ControllerStart(self,event = None):
+    def login(self,event = None):
         self.userName = self.userNameEntry.get()
         self.userCode = self.userCodeEntry.get()
         self.checkCode = self.checkCodeEntry.get()
@@ -168,12 +168,6 @@ class loginWidget(object):
         elif len(self.checkCode) != 5:
             tkinter.messagebox.showwarning('错误', '验证码不正确')
         else:
-            t1 = threading.Thread(target = self.login,args = ())
-            t1.start()
-            t1.join()
-            self.top.destroy()
-            
-    def login(self):
             self.mainPath = 'xs_main.aspx?xh='+self.userName
             
             bodypart1 = '__VIEWSTATE=dDwtMTg3MTM5OTI5MTs7PkfLdDpkwXkZwjVjoRLwfK%2BL%2FuEU&TextBox1='
@@ -210,8 +204,8 @@ class loginWidget(object):
                 else:
                     self.userXm = loginParser.xm
                     self.menuPath = loginParser.path
-                    self.event.set()
-
+                    self.loginState = True
+                    self.top.destroy()
 def main():
     loginWidget()
     tk.mainloop()
